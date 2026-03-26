@@ -315,35 +315,35 @@ async function selectCommune(c){
   updatePreview();
 }
 
-// OFGL live — 2 requ\u00eates parall\u00e8les pour Epargne brute + Annuit\u00e9 de la dette
+// OFGL live — champ correct : com_code (pas insee_commune)
 async function fetchFinancialData(codeInsee){
   const statusEl=document.getElementById("commune-status");
-  const B1="https://data.ofgl.fr/api/explore/v2.1/catalog/datasets/ofgl-base-communes-consolidee/records";
-  const B2="https://data.ofgl.fr/api/explore/v2.1/catalog/datasets/ofgl-base-communes/records";
-  const q=encodeURIComponent;
-
-  async function tryDataset(base){
-    const [r1,r2]=await Promise.all([
-      fetch(base+"?where=insee_commune%3D%22"+codeInsee+"%22%20AND%20agregat%3D%22Epargne%20brute%22&order_by=exer%20desc&limit=1&select=exer,montant,strate_population"),
-      fetch(base+"?where=insee_commune%3D%22"+codeInsee+"%22%20AND%20agregat%3D%22Annuit%C3%A9%20de%20la%20dette%22&order_by=exer%20desc&limit=1&select=exer,montant,strate_population")
-    ]);
-    if(!r1.ok||!r2.ok)return null;
-    const [d1,d2]=await Promise.all([r1.json(),r2.json()]);
-    const rC=d1.results&&d1.results[0],rA=d2.results&&d2.results[0];
-    if(!rC&&!rA)return null;
-    const caf=parseFloat((rC&&rC.montant)||0);
-    const annuite=parseFloat((rA&&rA.montant)||0);
-    const annee=(rC&&rC.exer)||(rA&&rA.exer)||"?";
-    const strate=String((rC&&rC.strate_population)||(rA&&rA.strate_population)||"3");
-    return{caf,annuite,ratio:caf>0?annuite/caf:null,annee,strate};
+  const BASE="https://data.ofgl.fr/api/explore/v2.1/catalog/datasets/ofgl-base-communes-consolidee/records";
+  function buildUrl(agregat){
+    const where='com_code="'+codeInsee+'" AND agregat="'+agregat+'"';
+    return BASE+"?where="+encodeURIComponent(where)+"&order_by=exer%20desc&limit=1&select=exer,montant,tranche_population";
   }
-
   try{
-    let result=await tryDataset(B1);
-    if(!result)result=await tryDataset(B2);
-    if(result){financeData=result;updateFinanceStatus();return;}
+    const [r1,r2,r3]=await Promise.all([
+      fetch(buildUrl("Epargne brute")),
+      fetch(buildUrl("Annuit\u00e9 de la dette")),
+      fetch(buildUrl("Encours de dette"))
+    ]);
+    const [d1,d2,d3]=await Promise.all([r1.json(),r2.json(),r3.json()]);
+    const rCAF=d1.results&&d1.results[0];
+    const rAnn=d2.results&&d2.results[0];
+    const rEnc=d3.results&&d3.results[0];
+    if(rCAF||rAnn||rEnc){
+      const caf=parseFloat((rCAF&&rCAF.montant)||0);
+      const annuite=parseFloat((rAnn&&rAnn.montant)||0);
+      const encours=parseFloat((rEnc&&rEnc.montant)||0);
+      const annee=(rCAF&&rCAF.exer)||(rAnn&&rAnn.exer)||"?";
+      const strate=String((rCAF&&rCAF.tranche_population)||(rAnn&&rAnn.tranche_population)||"3");
+      const ratio=caf>0?(annuite>0?annuite/caf:encours>0?encours/caf/10:null):null;
+      financeData={caf,annuite,encours,ratio,annee,strate};
+      updateFinanceStatus();return;
+    }
   }catch(e){}
-
   financeData=null;
   statusEl.innerHTML='<span class="status-badge status-neutral">Donn\u00e9es financi\u00e8res indisponibles \u2014 indice neutre \u00d71.00</span>';
 }
