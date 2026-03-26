@@ -254,25 +254,24 @@
 </div>
 
 <script>
+const _H = "1edb3f56e524d5791da434b7b30f8ab945fe9f66040eec10c8b23ce218e4501e";
 
-function checkLogin() {
-  const val = document.getElementById("login-pwd").value.trim();
-  if(val === atob("YW50b2luZWxlYm9zcw==")) {
+async function checkLogin() {
+  const val = document.getElementById("login-pwd").value;
+  if(!val) return;
+  // SHA-256 via crypto.subtle (HTTPS uniquement — GitHub Pages OK)
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(val));
+  const hash = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+  if(hash === _H) {
     document.getElementById("login-screen").style.display = "none";
-    sessionStorage.setItem("politicae_auth","1");
+    // Ne pas stocker en sessionStorage — re-demander à chaque ouverture
   } else {
     document.getElementById("login-error").style.display = "block";
     document.getElementById("login-pwd").value = "";
     document.getElementById("login-pwd").focus();
   }
 }
-// Vérifier si déjà authentifié dans cette session
-if(sessionStorage.getItem("politicae_auth")==="1") {
-  document.addEventListener("DOMContentLoaded", () => {
-    const s = document.getElementById("login-screen");
-    if(s) s.style.display = "none";
-  });
-}
+// Toujours afficher le login au chargement — pas de sessionStorage
 </script>
 
 <div class="app">
