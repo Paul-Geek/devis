@@ -110,14 +110,20 @@ const _H="1edb3f56e524d5791da434b7b30f8ab945fe9f66040eec10c8b23ce218e4501e";
 async function checkLogin(){
   const val=document.getElementById("login-pwd").value;
   if(!val)return;
-  try{
-    const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(val));
-    const hash=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
-    if(hash===_H){document.getElementById("login-screen").style.display="none";}
-    else showLoginError();
-  }catch(e){
-    if(val===atob("YW50b2luZWxlYm9zcw==")){document.getElementById("login-screen").style.display="none";}
-    else showLoginError();
+  // Méthode 1 : SHA-256 via crypto.subtle (HTTPS / GitHub Pages)
+  if(window.crypto&&window.crypto.subtle){
+    try{
+      const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(val));
+      const hash=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+      if(hash===_H){document.getElementById("login-screen").style.display="none";return;}
+      else{showLoginError();return;}
+    }catch(e){}
+  }
+  // Méthode 2 : comparaison directe (file:// ou navigateur sans crypto.subtle)
+  if(val===atob("YW50b2luZWxlYm9zcw==")){
+    document.getElementById("login-screen").style.display="none";
+  }else{
+    showLoginError();
   }
 }
 function showLoginError(){
@@ -707,14 +713,20 @@ const _H="1edb3f56e524d5791da434b7b30f8ab945fe9f66040eec10c8b23ce218e4501e";
 async function checkLogin(){
   const val=document.getElementById("login-pwd").value;
   if(!val)return;
-  try{
-    const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(val));
-    const hash=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
-    if(hash===_H){document.getElementById("login-screen").style.display="none";}
-    else showLoginError();
-  }catch(e){
-    if(val===atob("YW50b2luZWxlYm9zcw==")){document.getElementById("login-screen").style.display="none";}
-    else showLoginError();
+  // Méthode 1 : SHA-256 via crypto.subtle (HTTPS / GitHub Pages)
+  if(window.crypto&&window.crypto.subtle){
+    try{
+      const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(val));
+      const hash=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+      if(hash===_H){document.getElementById("login-screen").style.display="none";return;}
+      else{showLoginError();return;}
+    }catch(e){}
+  }
+  // Méthode 2 : comparaison directe (file:// ou navigateur sans crypto.subtle)
+  if(val===atob("YW50b2luZWxlYm9zcw==")){
+    document.getElementById("login-screen").style.display="none";
+  }else{
+    showLoginError();
   }
 }
 function showLoginError(){
