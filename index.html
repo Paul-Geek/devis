@@ -513,9 +513,7 @@ async function generatePDFs(){
     doc.setFillColor(17,31,73);doc.rect(0,46,W,2,"F");
     try{doc.addImage("data:image/png;base64,"+LOGO_B64,"PNG",M,6,28,28,"","FAST");}
     catch(e){doc.setTextColor(255,255,255);doc.setFontSize(18);doc.setFont("helvetica","bold");doc.text("POLITICAE",M,22);}
-    doc.setTextColor(190,205,230);doc.setFontSize(9);doc.setFont("helvetica","normal");
-    doc.text("Des \u00e9lus locaux form\u00e9s par des \u00e9lus locaux",M,34);
-    doc.setTextColor(160,175,205);doc.setFontSize(8);
+        doc.setTextColor(160,175,205);doc.setFontSize(8);
     doc.text("R\u00e9f. "+refBase+(lieux.length>1?"-"+(li+1):"")+" \u2022 \u00c9mis le "+dateStr,M,32);
     doc.setTextColor(0,5,70);doc.setFontSize(14);doc.setFont("helvetica","bold");
     doc.text("DEVIS DE FORMATION",M,58);
