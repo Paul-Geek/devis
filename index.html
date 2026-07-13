@@ -511,12 +511,12 @@ async function generatePDFs(){
     const W=210,M=18;
     doc.setFillColor(0,5,70);doc.rect(0,0,W,46,"F");
     doc.setFillColor(17,31,73);doc.rect(0,46,W,2,"F");
-    try{doc.addImage("data:image/png;base64,"+LOGO_B64,"PNG",M,8,68,20,"","FAST");}
+    try{doc.addImage("data:image/png;base64,"+LOGO_B64,"PNG",M,6,28,28,"","FAST");}
     catch(e){doc.setTextColor(255,255,255);doc.setFontSize(18);doc.setFont("helvetica","bold");doc.text("POLITICAE",M,22);}
     doc.setTextColor(190,205,230);doc.setFontSize(9);doc.setFont("helvetica","normal");
     doc.text("Des \u00e9lus locaux form\u00e9s par des \u00e9lus locaux",M,34);
     doc.setTextColor(160,175,205);doc.setFontSize(8);
-    doc.text("R\u00e9f. "+refBase+(lieux.length>1?"-"+(li+1):"")+" \u2022 \u00c9mis le "+dateStr,M,42);
+    doc.text("R\u00e9f. "+refBase+(lieux.length>1?"-"+(li+1):"")+" \u2022 \u00c9mis le "+dateStr,M,32);
     doc.setTextColor(0,5,70);doc.setFontSize(14);doc.setFont("helvetica","bold");
     doc.text("DEVIS DE FORMATION",M,58);
     let y=66;const blocH=email?40:33;
@@ -575,8 +575,7 @@ async function generatePDFs(){
     doc.setTextColor(0,5,70);doc.setFontSize(8.5);doc.setFont("helvetica","bold");
     doc.text("Conditions et mentions",M,y);y+=5;
     doc.setFont("helvetica","normal");doc.setTextColor(70,80,110);doc.setFontSize(7.5);
-    ["Ce devis est \u00e9tabli \u00e0 titre indicatif selon une grille d\u2019indices internes \u00e0 IFPEL.",
-     "Devis valable 30 jours \u00e0 compter de sa date d\u2019\u00e9mission.",
+    ["Devis valable 30 jours \u00e0 compter de sa date d\u2019\u00e9mission.",
      "Date de r\u00e9alisation : \u00e0 fixer ult\u00e9rieurement."
     ].forEach(function(m){doc.text("\u2022 "+m,M,y);y+=5;});
     y+=6;
